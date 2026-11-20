@@ -1,0 +1,111 @@
+import type { ReactNode } from "react";
+import { cn } from "cn";
+
+// Settings pages are titled sections of cards, and each card is a stack of
+// rows: what the setting is on the left, its control on the right.
+
+/** A titled group of settings: one or more `SettingsCard`s. */
+export function SettingsSection({
+  id,
+  title,
+  description,
+  action,
+  children,
+}: {
+  id?: string;
+  title: ReactNode;
+  description?: ReactNode;
+  /** A control beside the title, such as a "New" button for a table. */
+  action?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <section id={id} className="scroll-mt-6 space-y-3">
+      <div
+        className={cn(
+          "flex justify-between gap-3",
+          // A title alone sits level with the action; under a description
+          // the action lines up with the description.
+          description ? "items-end" : "items-center",
+        )}
+      >
+        <div className="min-w-0 space-y-1">
+          <h2 className="text-base font-semibold tracking-tight">{title}</h2>
+          {description ? (
+            <p className="text-sm text-muted-foreground">{description}</p>
+          ) : null}
+        </div>
+        {action ? <div className="flex shrink-0 gap-2">{action}</div> : null}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+/** A card of settings rows, divided by hairlines. */
+export function SettingsCard({ children }: { children: ReactNode }) {
+  return (
+    <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-xs">
+      {children}
+    </div>
+  );
+}
+
+/**
+ * One setting: its name and what it does on the left, its control on the
+ * right. Below `sm` the control drops under the text. Pass `htmlFor` when
+ * the control is a single field, so the name labels it.
+ */
+export function SettingsRow({
+  label,
+  description,
+  htmlFor,
+  children,
+  stacked = false,
+}: {
+  label: ReactNode;
+  description?: ReactNode;
+  htmlFor?: string;
+  /** The control: a field, a select, a switch, a button or a status. */
+  children?: ReactNode;
+  /** Put the control under the text at every width, for wide controls. */
+  stacked?: boolean;
+}) {
+  const Label = htmlFor ? "label" : "div";
+  return (
+    <div
+      className={cn(
+        "flex flex-col gap-3 px-5 py-4",
+        !stacked && "sm:flex-row sm:items-center sm:justify-between sm:gap-8",
+      )}
+    >
+      <div className="min-w-0 space-y-0.5">
+        <Label htmlFor={htmlFor} className="block text-sm font-medium">
+          {label}
+        </Label>
+        {description ? (
+          <div className="text-sm text-muted-foreground">{description}</div>
+        ) : null}
+      </div>
+      {children ? (
+        <div
+          className={cn(
+            "flex min-w-0 items-center gap-2",
+            !stacked && "sm:shrink-0 sm:justify-end",
+          )}
+        >
+          {children}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/** A strip under a card's rows for its Save button and the like. */
+export function SettingsCardFooter({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex items-center justify-end gap-2 bg-foreground/[0.02] px-5 py-3">
+      {children}
+    </div>
+  );
+}
